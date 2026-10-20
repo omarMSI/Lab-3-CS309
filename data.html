@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omar | Data Table</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .table-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .search-box {
+            max-width: 300px;
+        }
+        .sort-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table th {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Omar</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="component.html">Components</a>
+            <a href="validation.html">Register</a>
+            <a href="data.html" class="active">Data Table</a>
+        </nav>
+        <button id="theme-toggle" class="theme-toggle-btn">🌙 Dark Mode</button>
+    </header>
+
+    <main class="container">
+        <section>
+            <h2>Data Table</h2>
+
+            <div class="table-controls">
+                <input type="text" id="searchInput" class="search-box" placeholder="Search by name or city...">
+                <div class="sort-buttons">
+                    <button id="sortNameBtn" class="btn btn-outline">Sort by Name</button>
+                    <button id="sortAgeBtn" class="btn btn-outline">Sort by Age</button>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>City</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Dynamic Content -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Omar. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Dark Mode Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.textContent = '☀️ Light Mode';
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        });
+
+        // Array of Objects
+        const peopleData = [
+            { name: "Omar Mohamed", age: 21, city: "Cairo" },
+            { name: "Ahmed Hassan", age: 24, city: "Alexandria" },
+            { name: "Sarah Ali", age: 20, city: "Giza" },
+            { name: "Khaled Ibrahim", age: 22, city: "Mansoura" },
+            { name: "Mona Mahmoud", age: 23, city: "Cairo" }
+        ];
+
+        let currentData = [...peopleData];
+        let nameSortAsc = true;
+        let ageSortAsc = true;
+
+        const tableBody = document.getElementById('tableBody');
+        const searchInput = document.getElementById('searchInput');
+        const sortNameBtn = document.getElementById('sortNameBtn');
+        const sortAgeBtn = document.getElementById('sortAgeBtn');
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No matching records found.</td></tr>';
+                return;
+            }
+            data.forEach(person => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${person.name}</td>
+                    <td>${person.age}</td>
+                    <td>${person.city}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Live Filter
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            const filtered = peopleData.filter(person => 
+                person.name.toLowerCase().includes(query) || 
+                person.city.toLowerCase().includes(query)
+            );
+            currentData = filtered;
+            renderTable(currentData);
+        });
+
+        // Sort by Name
+        sortNameBtn.addEventListener('click', function () {
+            currentData.sort((a, b) => {
+                return nameSortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+            });
+            nameSortAsc = !nameSortAsc;
+            renderTable(currentData);
+        });
+
+        // Sort by Age
+        sortAgeBtn.addEventListener('click', function () {
+            currentData.sort((a, b) => {
+                return ageSortAsc ? a.age - b.age : b.age - a.age;
+            });
+            ageSortAsc = !ageSortAsc;
+            renderTable(currentData);
+        });
+
+        // Initial render
+        renderTable(currentData);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omar | Registration & Validation</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .error-message {
+            color: #ef4444;
+            font-size: 14px;
+            margin-top: 4px;
+            display: block;
+            min-height: 18px;
+        }
+        .input-error {
+            border-color: #ef4444 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Omar</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="component.html">Components</a>
+            <a href="validation.html" class="active">Register</a>
+            <a href="data.html">Data Table</a>
+        </nav>
+        <button id="theme-toggle" class="theme-toggle-btn">🌙 Dark Mode</button>
+    </header>
+
+    <main class="container">
+        <section>
+            <h2>Registration Form</h2>
+            <form id="registrationForm" novalidate>
+                
+                <div class="form-field">
+                    <label for="reg-name">Name:</label>
+                    <input type="text" id="reg-name" placeholder="Enter your full name">
+                    <span class="error-message" id="nameError"></span>
+                </div>
+
+                <div class="form-field">
+                    <label for="reg-email">Email:</label>
+                    <input type="email" id="reg-email" placeholder="Enter your email address">
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-field">
+                    <label for="reg-password">Password:</label>
+                    <input type="password" id="reg-password" placeholder="At least 8 characters">
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-field">
+                    <label for="reg-confirm-password">Confirm Password:</label>
+                    <input type="password" id="reg-confirm-password" placeholder="Re-enter password">
+                    <span class="error-message" id="confirmPasswordError"></span>
+                </div>
+
+                <div class="form-field">
+                    <label for="reg-age">Age:</label>
+                    <input type="number" id="reg-age" placeholder="Enter your age">
+                    <span class="error-message" id="ageError"></span>
+                </div>
+
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Omar. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Dark Mode Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggleBtn.textContent = '☀️ Light Mode';
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        });
+
+        // Form Validation Logic
+        const form = document.getElementById('registrationForm');
+        const nameInput = document.getElementById('reg-name');
+        const emailInput = document.getElementById('reg-email');
+        const passwordInput = document.getElementById('reg-password');
+        const confirmPasswordInput = document.getElementById('reg-confirm-password');
+        const ageInput = document.getElementById('reg-age');
+
+        function showError(input, errorEl, message) {
+            errorEl.textContent = message;
+            input.classList.add('input-error');
+        }
+
+        function clearError(input, errorEl) {
+            errorEl.textContent = '';
+            input.classList.remove('input-error');
+        }
+
+        function validateName() {
+            const val = nameInput.value.trim();
+            if (!val) {
+                showError(nameInput, document.getElementById('nameError'), 'Name is required.');
+                return false;
+            }
+            clearError(nameInput, document.getElementById('nameError'));
+            return true;
+        }
+
+        function validateEmail() {
+            const val = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!val) {
+                showError(emailInput, document.getElementById('emailError'), 'Email is required.');
+                return false;
+            } else if (!emailRegex.test(val)) {
+                showError(emailInput, document.getElementById('emailError'), 'Please enter a valid email address.');
+                return false;
+            }
+            clearError(emailInput, document.getElementById('emailError'));
+            return true;
+        }
+
+        function validatePassword() {
+            const val = passwordInput.value;
+            if (!val) {
+                showError(passwordInput, document.getElementById('passwordError'), 'Password is required.');
+                return false;
+            } else if (val.length < 8) {
+                showError(passwordInput, document.getElementById('passwordError'), 'Password must be at least 8 characters.');
+                return false;
+            }
+            clearError(passwordInput, document.getElementById('passwordError'));
+            return true;
+        }
+
+        function validateConfirmPassword() {
+            const pass = passwordInput.value;
+            const confirmPass = confirmPasswordInput.value;
+            if (!confirmPass) {
+                showError(confirmPasswordInput, document.getElementById('confirmPasswordError'), 'Please confirm your password.');
+                return false;
+            } else if (pass !== confirmPass) {
+                showError(confirmPasswordInput, document.getElementById('confirmPasswordError'), 'Passwords do not match.');
+                return false;
+            }
+            clearError(confirmPasswordInput, document.getElementById('confirmPasswordError'));
+            return true;
+        }
+
+        function validateAge() {
+            const val = ageInput.value.trim();
+            if (!val) {
+                showError(ageInput, document.getElementById('ageError'), 'Age is required.');
+                return false;
+            } else if (parseInt(val) <= 0 || isNaN(parseInt(val))) {
+                showError(ageInput, document.getElementById('ageError'), 'Please enter a valid age.');
+                return false;
+            }
+            clearError(ageInput, document.getElementById('ageError'));
+            return true;
+        }
+
+        // Live validation on input
+        nameInput.addEventListener('input', validateName);
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+        ageInput.addEventListener('input', validateAge);
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            const isConfirmValid = validateConfirmPassword();
+            const isAgeValid = validateAge();
+
+            if (isNameValid && isEmailValid && isPasswordValid && isConfirmValid && isAgeValid) {
+                alert('Registration successful!');
+                form.reset();
+            }
+        });
+    </script>
+</body>
+
+</html>
